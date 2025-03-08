@@ -31,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     // Get initial session
@@ -40,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchUserProfile(session.user);
       } else {
         setLoading(false);
+        setInitializing(false);
       }
     });
 
@@ -52,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setUser(null);
           setLoading(false);
+          setInitializing(false);
         }
       }
     );
@@ -83,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error al cargar perfil de usuario:', error);
     } finally {
       setLoading(false);
+      setInitializing(false);
     }
   };
 
@@ -137,6 +141,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error al cerrar sesión:', err.message);
     }
   };
+
+  if (initializing) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, loading, error }}>
